@@ -1,0 +1,122 @@
+<div class="resume-upload-container" id="upload">
+  <div class="upload-header">
+    <h2>Upload Your Resume</h2>
+    <p>Get personalized job recommendations and AI-powered analysis</p>
+  </div>
+
+  <div class="upload-area" *ngIf="!currentResume">
+    <div class="upload-box" 
+         (dragover)="$event.preventDefault()" 
+         (drop)="onFileSelected($event)"
+         (click)="fileInput.click()">
+      <div class="upload-icon">📄</div>
+      <h3>Drop your resume here</h3>
+      <p>or click to browse files</p>
+      <p class="file-types">Supports: PDF, DOC, DOCX, TXT</p>
+    </div>
+    
+    <input #fileInput 
+           type="file" 
+           accept=".pdf,.doc,.docx,.txt"
+           (change)="onFileSelected($event)"
+           style="display: none;">
+  </div>
+
+  <div class="upload-progress" *ngIf="isUploading">
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+      </div>
+      <p class="progress-text">Uploading... {{ uploadProgress }}%</p>
+    </div>
+  </div>
+
+  <div class="resume-display" *ngIf="currentResume && !isUploading">
+    <div class="resume-header">
+      <div class="resume-info">
+        <div class="file-icon">📄</div>
+        <div class="file-details">
+          <h3>{{ currentResume.fileName }}</h3>
+          <p>{{ formatFileSize(currentResume.fileSize) }} • Uploaded {{ formatDate(currentResume.uploadDate) }}</p>
+        </div>
+      </div>
+      <button class="clear-btn" (click)="clearResume()">🗑️ Clear</button>
+    </div>
+
+    <div class="resume-content" *ngIf="currentResume.parsedData">
+      <div class="content-section">
+        <h4>Personal Information</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Name:</span>
+            <span class="info-value">{{ currentResume.parsedData.name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ currentResume.parsedData.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone:</span>
+            <span class="info-value">{{ currentResume.parsedData.phone }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h4>Summary</h4>
+        <p class="summary-text">{{ currentResume.parsedData.summary }}</p>
+      </div>
+
+      <div class="content-section">
+        <h4>Skills</h4>
+        <div class="skills-grid">
+          <span class="skill-tag" *ngFor="let skill of currentResume.parsedData.skills">{{ skill }}</span>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h4>Experience</h4>
+        <div class="experience-list">
+          <div class="experience-item" *ngFor="let exp of currentResume.parsedData.experience">
+            <div class="exp-header">
+              <h5>{{ exp.title }}</h5>
+              <span class="exp-company">{{ exp.company }}</span>
+              <span class="exp-duration">{{ exp.duration }}</span>
+            </div>
+            <p class="exp-description">{{ exp.description }}</p>
+            <div class="exp-skills">
+              <span class="skill-tag small" *ngFor="let skill of exp.skills">{{ skill }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h4>Education</h4>
+        <div class="education-list">
+          <div class="education-item" *ngFor="let edu of currentResume.parsedData.education">
+            <div class="edu-header">
+              <h5>{{ edu.degree }}</h5>
+              <span class="edu-institution">{{ edu.institution }}</span>
+              <span class="edu-year">{{ edu.year }}</span>
+            </div>
+            <p class="edu-gpa" *ngIf="edu.gpa">GPA: {{ edu.gpa }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-tips-section">
+      <button class="tips-btn" (click)="toggleTips()">
+        {{ showTips ? 'Hide' : 'Show' }} AI Improvement Tips
+      </button>
+      
+      <div class="tips-content" *ngIf="showTips">
+        <h4>💡 AI-Powered Resume Tips</h4>
+        <ul class="tips-list">
+          <li *ngFor="let tip of improvementTips">{{ tip }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

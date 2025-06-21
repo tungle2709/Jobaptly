@@ -1,0 +1,134 @@
+<div class="job-swipe-container" id="swipe">
+  <div class="swipe-header">
+    <h2>Swipe to Apply</h2>
+    <p>Swipe right to apply, left to save for later</p>
+  </div>
+
+  <div class="swipe-area">
+    <div *ngIf="currentJob" 
+         class="job-card"
+         [class.swiping]="isDragging"
+         [class.swipe-left]="swipeDirection === 'left'"
+         [class.swipe-right]="swipeDirection === 'right'"
+         [style.transform]="getSwipeTransform()"
+         (touchstart)="onTouchStart($event)"
+         (touchmove)="onTouchMove($event)"
+         (touchend)="onTouchEnd()">
+      
+      <div class="card-header">
+        <div class="company-info">
+          <div class="company-logo">
+            <span class="logo-placeholder">{{ currentJob.company.charAt(0) }}</span>
+          </div>
+          <div class="company-details">
+            <h3 class="job-title">{{ currentJob.title }}</h3>
+            <p class="company-name">{{ currentJob.company }}</p>
+            <p class="job-location">📍 {{ currentJob.location }}</p>
+          </div>
+        </div>
+        
+        <div class="fit-score" *ngIf="!isAnalyzing">
+          <div class="score-circle" [style.background]="getFitScoreColor(currentJob.fitScore || 0)">
+            <span class="score-text">{{ currentJob.fitScore || 0 }}%</span>
+          </div>
+          <p class="score-label">Fit Score</p>
+        </div>
+        
+        <div class="loading-spinner" *ngIf="isAnalyzing">
+          <div class="spinner"></div>
+          <p>Analyzing...</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="job-details">
+          <div class="detail-row">
+            <span class="detail-label">Salary:</span>
+            <span class="detail-value">{{ currentJob.salary }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Type:</span>
+            <span class="detail-value">{{ currentJob.type }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Experience:</span>
+            <span class="detail-value">{{ currentJob.experience }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Degree:</span>
+            <span class="detail-value">{{ currentJob.degree }}</span>
+          </div>
+        </div>
+
+        <div class="skills-section">
+          <h4>Required Skills</h4>
+          <div class="skills-grid">
+            <span class="skill-tag" *ngFor="let skill of currentJob.skills">{{ skill }}</span>
+          </div>
+        </div>
+
+        <div class="job-description">
+          <h4>Description</h4>
+          <p>{{ currentJob.description }}</p>
+        </div>
+
+        <div class="analysis-toggle" *ngIf="analysis">
+          <button class="analysis-btn" (click)="toggleAnalysis()">
+            {{ showAnalysis ? 'Hide' : 'Show' }} AI Analysis
+          </button>
+        </div>
+
+        <div class="ai-analysis" *ngIf="showAnalysis && analysis">
+          <div class="analysis-section">
+            <h4>Strengths</h4>
+            <ul class="analysis-list strengths">
+              <li *ngFor="let strength of analysis.strengths">{{ strength }}</li>
+            </ul>
+          </div>
+          
+          <div class="analysis-section">
+            <h4>Areas for Improvement</h4>
+            <ul class="analysis-list weaknesses">
+              <li *ngFor="let weakness of analysis.weaknesses">{{ weakness }}</li>
+            </ul>
+          </div>
+          
+          <div class="analysis-section">
+            <h4>Recommendations</h4>
+            <ul class="analysis-list recommendations">
+              <li *ngFor="let rec of analysis.recommendations">{{ rec }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="action-btn save-btn" (click)="swipeLeft()">
+          💾 Save
+        </button>
+        <button class="action-btn apply-btn" (click)="swipeRight()">
+          ✅ Apply
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!currentJob" class="no-jobs">
+      <div class="no-jobs-content">
+        <span class="no-jobs-icon">🎉</span>
+        <h3>No More Jobs!</h3>
+        <p>You've reviewed all available jobs. Check back later for new opportunities!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="swipe-instructions">
+    <div class="instruction">
+      <span class="instruction-icon">👈</span>
+      <span>Swipe left to save</span>
+    </div>
+    <div class="instruction">
+      <span class="instruction-icon">👉</span>
+      <span>Swipe right to apply</span>
+    </div>
+  </div>
+</div>
